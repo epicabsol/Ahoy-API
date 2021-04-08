@@ -13,11 +13,13 @@ namespace AhoyAPI.Controllers
     public class PostsController : Controller
     {
         private DataService DataService { get; }
+        private NotificationService NotificationService { get; }
         private ILogger<PostsController> Logger { get; }
 
-        public PostsController(DataService dataService, ILogger<PostsController> logger)
+        public PostsController(DataService dataService, NotificationService notificactionService, ILogger<PostsController> logger)
         {
             this.DataService = dataService;
+            this.NotificationService = notificactionService;
             this.Logger = logger;
         }
 
@@ -41,6 +43,9 @@ namespace AhoyAPI.Controllers
             else
             {
                 Models.Post post = this.DataService.CreatePost(request.Author, request.Content);
+
+                this.NotificationService.PublishPostCreated(post);
+
                 return this.CreateSuccess(post);
             }
         }
@@ -73,10 +78,15 @@ namespace AhoyAPI.Controllers
 
         // GET: api/posts/notifications
         [HttpGet("notifications")]
-        public IActionResult SubscribeToNotifications()
+        public async Task<IActionResult> SubscribeToNotifications()
         {
-            // TODO: Implement!
-            throw new NotImplementedException();
+            this.Response.Headers.Add("Content-Type", "text/event-stream");
+            this.Response.StatusCode = Microsoft.AspNetCore.Http.StatusCodes.Status200OK;
+
+            // This never returns
+            await this.NotificationService.Subscribe(this.Response);
+
+            return Ok();
         }
     }
 }

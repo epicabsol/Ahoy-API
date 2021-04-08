@@ -29,6 +29,8 @@ namespace AhoyAPI
             services.Configure<Services.DataServiceOptions>(Configuration.GetSection(Services.DataServiceOptions.SectionName));
             services.AddScoped<Services.DataService>();
 
+            services.AddSingleton<Services.NotificationService>();
+
             services.AddControllers();
         }
 
