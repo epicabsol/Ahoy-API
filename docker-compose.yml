@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:13.1
+    restart: always
+    env_file:
+      - ./db/db.env
+    volumes:
+      - /var/lib/postgresql/data
+      - ./db/scripts:/scripts:ro
+    networks:
+      - internal-network
+
+# Define an internal network so that the database is completely disconnected from the public Internet.
+networks:
+  internal-network:
+    internal: true
+  public-network:
