@@ -24,7 +24,7 @@ psql -d ahoy -f /scripts/init.sql
 API Endpoints
 ---------
 
-**`POST` `/api/post`**
+**`POST` `/api/posts`**
 
 Posts a new message with the given author name and content.
 
@@ -39,11 +39,16 @@ Example body:
 Example response:
 ```
 {
-    "success": true
+    "success": true,
+    "data": {
+        "id": 420,
+        "author": "Joe",
+        "content": "Joe here. This is my test message."
+    }
 }
 ```
 
-**`GET` `/api/postsBefore?end=10&count=10`**
+**`GET` `/api/posts/before?end=10&count=10`**
 
 Gets the given number of messages before the message with the given ID.
 
@@ -57,18 +62,20 @@ Example response:
 ```
 {
     "success": true,
-    "data": [
-        {
-            "id": 420,
-            "author": "Ben",
-            "content": "This is a test post."
-        }
-    ],
-    "more": false
+    "data": {
+        "posts": [
+            {
+                "id": 420,
+                "author": "Ben",
+                "content": "This is a test post."
+            }
+        ],
+        "more": false
+    }
 }
 ```
 
-**`GET` `/api/postsAfter?start=10&count=10`**
+**`GET` `/api/posts/after?start=10&count=10`**
 
 Gets the given number of messages after the message with the given ID.
 
@@ -82,18 +89,20 @@ Example response:
 ```
 {
     "success": true,
-    "data": [
-        {
-            "id": 420,
-            "author": "Ben",
-            "content": "This is a test post."
-        }
-    ],
-    "more": false
+    "data": {
+        "posts": [
+            {
+                "id": 420,
+                "author": "Ben",
+                "content": "This is a test post."
+            }
+        ],
+        "more": false
+    }
 }
 ```
 
-**`GET` `/api/postNotifications`**
+**`GET` `/api/posts/notifications`**
 
 Listens for Server-Sent Events regarding new posts being created.
 
