@@ -25,6 +25,9 @@ namespace AhoyAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Inject the data service options and then the data service
+            services.Configure<Services.DataServiceOptions>(Configuration.GetSection(Services.DataServiceOptions.SectionName));
+            services.AddScoped<Services.DataService>();
 
             services.AddControllers();
         }
@@ -37,7 +40,7 @@ namespace AhoyAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            // Allow clients to connect over HTTP
+            // The following line is commented out to allow clients to connect over HTTP for ease of development
             //app.UseHttpsRedirection();
 
             app.UseRouting();

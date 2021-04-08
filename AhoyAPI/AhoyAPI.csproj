@@ -9,4 +9,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="5.0.4" />
+  </ItemGroup>
 </Project>

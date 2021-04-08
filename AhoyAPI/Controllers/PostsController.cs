@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using AhoyAPI.Services;
 
 namespace AhoyAPI.Controllers
 {
@@ -11,10 +12,12 @@ namespace AhoyAPI.Controllers
     [Route("api/[controller]")]
     public class PostsController : Controller
     {
+        private DataService DataService { get; }
         private ILogger<PostsController> Logger { get; }
 
-        public PostsController(ILogger<PostsController> logger)
+        public PostsController(DataService dataService, ILogger<PostsController> logger)
         {
+            this.DataService = dataService;
             this.Logger = logger;
         }
 
@@ -27,8 +30,8 @@ namespace AhoyAPI.Controllers
         [HttpPost]
         public IActionResult CreatePost(CreatePostRequest request)
         {
-            // TODO: Implement!
-            throw new NotImplementedException();
+            Models.Post post = this.DataService.CreatePost(request.Author, request.Content);
+            return this.CreateSuccess(post);
         }
 
         // GET: api/posts/before?end=18&count=10
