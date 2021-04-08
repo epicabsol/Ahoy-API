@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -58,6 +59,86 @@ namespace AhoyAPI.Services
                     {
                         return null;
                     }
+                }
+            }
+        }
+
+        public List<Models.Post> GetPostsBefore(int endID, int maxCount, out bool more)
+        {
+            string query = "SELECT ID, Author, Content FROM Post";
+            if (endID != -1)
+            {
+                query += " WHERE ID < @endID";
+            }
+            query += " ORDER BY ID DESC LIMIT @maxCount";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, this.Connection))
+            {
+                if (endID != -1)
+                {
+                    command.Parameters.AddWithValue("@endID", endID);
+                }
+                command.Parameters.AddWithValue("@maxCount", maxCount + 1);
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    List<Models.Post> posts = new List<Models.Post>(maxCount);
+                    while (reader.Read())
+                    {
+                        posts.Add(new Models.Post(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
+                    }
+
+                    // We intentionally limited the query to one more than the requested max. If we got the extra row, mark
+                    // the `more` flag as true.
+                    if (posts.Count > maxCount)
+                    {
+                        posts.RemoveAt(posts.Count - 1);
+                        more = true;
+                    }
+                    else
+                    {
+                        more = false;
+                    }
+
+                    return posts;
+                }
+            }
+        }
+
+        public List<Models.Post> GetPostsAfter(int startID, int maxCount, out bool more)
+        {
+            string query = "SELECT ID, Author, Content FROM Post";
+            if (startID != -1)
+            {
+                query += " WHERE ID > @startID";
+            }
+            query += " ORDER BY ID ASC LIMIT @maxCount";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, this.Connection))
+            {
+                if (startID != -1)
+                {
+                    command.Parameters.AddWithValue("@startID", startID);
+                }
+                command.Parameters.AddWithValue("@maxCount", maxCount + 1);
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    List<Models.Post> posts = new List<Models.Post>(maxCount);
+                    while (reader.Read())
+                    {
+                        posts.Add(new Models.Post(reader.GetInt32(0), reader.GetString(1), reader.GetString(2)));
+                    }
+
+                    // We intentionally limited the query to one more than the requested max. If we got the extra row, mark
+                    // the `more` flag as true.
+                    if (posts.Count > maxCount)
+                    {
+                        posts.RemoveAt(posts.Count - 1);
+                        more = true;
+                    }
+                    else
+                    {
+                        more = false;
+                    }
+
+                    return posts;
                 }
             }
         }
